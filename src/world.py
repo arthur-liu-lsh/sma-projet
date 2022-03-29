@@ -5,7 +5,7 @@ from src.agent import *
 class World:
     def __init__(self, size: int, p_obstacles: float, n_agents: int) -> None:
         self.size = size
-        self.grid = np.zeros((size,size))
+        self.grid = - np.ones((size,size))
         self.p_obstacles = p_obstacles
         self.generate_obstacles()
         self.generate_agents()
@@ -24,9 +24,9 @@ class World:
         if i < 0 or i >= self.size or j < 0 or j >= self.size:
             print("Incorrect coordinates")
             return False
-        if self.grid[i,j] == -1:
+        if self.grid[i,j] == -2:
             return False
-        self.grid[i,j] = -1
+        self.grid[i,j] = -2
         return True
 
     def generate_agents(self) -> None:
@@ -39,3 +39,31 @@ class World:
         plt.figure()
         plt.imshow(self.grid, cmap='gray')
         plt.show()
+
+
+    def check_validity_rec(self, arr, row, col, first) -> None:
+        if first :
+            row, col = (np.random.randint(self.size), np.random.randint(self.size))
+        arr[row][col] = -3
+        voisins = [(row+1,col),(row-1,col),(row,col-1),(row,col+1)]
+        for voisin in voisins:
+            (v_row,v_col) = voisin
+            if v_row>=0 and v_row<self.size and v_col>=0 and v_col<self.size:
+                if arr[v_row][v_col]==-1:
+                    self.check_validity_rec(arr,v_row,v_col, False)
+
+    def check_validity_kernel(self) -> bool:
+        test = np.copy(self.grid)
+        self.check_validity_rec(test, 0, 0, True)
+        percentage = np.sum(test == -3)/((self.size)**2-np.sum(test == -2)) *100
+        if percentage >= 70 :
+            return True
+        else:
+            return False
+
+    def check_validity(self) -> bool:
+        for i in range(5):
+            res = self.check_validity_kernel()
+            if res == True:
+                break
+        return res
