@@ -52,18 +52,18 @@ class World:
                 if arr[v_row][v_col]==-1:
                     self.check_validity_rec(arr,v_row,v_col, False)
 
-    def check_validity_kernel(self) -> bool:
+    def check_validity_kernel(self, valid_ratio) -> bool:
         test = np.copy(self.grid)
         self.check_validity_rec(test, 0, 0, True)
-        percentage = np.sum(test == -3)/((self.size)**2-np.sum(test == -2)) *100
-        if percentage >= 70 :
+        percentage = np.sum(test == -3)/((self.size)**2-np.sum(test == -2))
+        if percentage >= valid_ratio :
             return True
         else:
             return False
 
-    def check_validity(self) -> bool:
-        for i in range(5):
-            res = self.check_validity_kernel()
+    def check_validity(self, nb_check, valid_ratio) -> bool:
+        for i in range(nb_check):
+            res = self.check_validity_kernel(valid_ratio)
             if res == True:
                 break
         return res
