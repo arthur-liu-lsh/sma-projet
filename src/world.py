@@ -207,3 +207,107 @@ class World:
                 go = False
             count += 1
         return count
+
+
+def h(grid, init, obj):
+    cgrid = np.copy(grid)
+    cgrid[cgrid>=0] = -2
+    i =0
+    cgrid[init[0]][init[1]]=0
+    cond = True
+    while cond:
+        coords = np.argwhere(cgrid == i)
+        modif = False
+        for coord in coords:
+            if coord[0] -1 >= 0 and cgrid[coord[0]-1][coord[1]]==-1:
+                cgrid[coord[0]-1][coord[1]]=i+1
+                modif = True
+            if coord[0] + 1 <cgrid.shape[0] and cgrid[coord[0]+1][coord[1]]==-1:
+                cgrid[coord[0]+1][coord[1]]=i+1
+                modif = True
+            if coord[1] -1 >= 0 and cgrid[coord[0]][coord[1]-1]==-1:
+                cgrid[coord[0]][coord[1]-1]=i+1
+                modif = True
+            if coord[1] + 1 <cgrid.shape[1] and cgrid[coord[0]][coord[1]+1]==-1:
+                cgrid[coord[0]][coord[1]+1]=i+1
+                modif = True
+        i+=1
+        if cgrid[obj[0]][obj[1]]!=-1 or not modif:
+            cond = False
+    return cgrid[obj[0]][obj[1]]
+
+def reconstruct_path(checked, init, obj):
+    current = obj
+    while True:
+        test = [x[1] for x in checked]
+        ind = test.index(current)
+        res = checked[ind][0]
+        if res == init:
+            return current
+
+
+
+def A_star(grid, agent):
+    queue = []
+    gn = 0
+    objective = agent.objective
+    fn = h(grid, agent.position, objective)
+    if fn == -1 :
+        return agent.position #si pas de possibilité d'accéder à l'objectif, on attend à la même case   
+    queue.append([gn, fn, agent.position])
+    checked = []
+    while queue:
+        test1 = [x[1] for x in queue]
+        ind = test1.index(min(test1))
+        node = queue.pop(ind)
+        coord = node[1]
+        if coord == node[2]:
+            return reconstruct_path(checked)
+        else:
+            gn = node[0]+1
+            test2 = [x[1] for x in checked]
+            
+            if coord[0] -1 >= 0 and grid[coord[0]-1][coord[1]]==-1:
+                new_coord = (coord[0]-1, coord[1])
+                test3 = [x[0] for x in queue if x[2]==new_coord]
+                if not new_coord in test2 and all(i >= gn for i in test3):
+                    res = h(grid, new_coord, objective)
+                    if res > -1:
+                        fn = gn + res
+                        checked.append([coord, new_coord, fn])
+                        queue.append([gn, fn, new_coord])
+
+
+            if coord[0] + 1 <grid.shape[0] and grid[coord[0]+1][coord[1]]==-1:
+                new_coord = (coord[0]+1, coord[1])
+                test3 = [x[0] for x in queue if x[2]==new_coord]
+                if not new_coord in test2 and all(i >= gn for i in test3):
+                    res = h(grid, new_coord, objective)
+                    if res > -1:
+                        fn = gn + res
+                        checked.append([coord, new_coord, fn])
+                        queue.append([gn, fn, new_coord])
+
+
+            if coord[1] -1 >= 0 and grid[coord[0]][coord[1]-1]==-1:
+                new_coord = (coord[0], coord[1]-1)
+                test3 = [x[0] for x in queue if x[2]==new_coord]
+                if not new_coord in test2 and all(i >= gn for i in test3):
+                    res = h(grid, new_coord, objective)
+                    if res > -1:
+                        fn = gn + res
+                        checked.append([coord, new_coord, fn])
+                        queue.append([gn, fn, new_coord])
+
+
+            if coord[1] + 1 <grid.shape[1] and grid[coord[0]][coord[1]+1]==-1:
+                new_coord = (coord[0], coord[1]+1)
+                test3 = [x[0] for x in queue if x[2]==new_coord]
+                if not new_coord in test2 and all(i >= gn for i in test3):
+                    res = h(grid, new_coord, objective)
+                    if res > -1:
+                        fn = gn + res
+                        checked.append([coord, new_coord, fn])
+                        queue.append([gn, fn, new_coord])
+    return None
+
