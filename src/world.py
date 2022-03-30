@@ -299,6 +299,10 @@ class World:
             count += 1
         return count
 
+    def print_objectives(self):
+        for i in range(len(self.agents)):
+            print(self.agents[i].id, "->", self.agents[i].objective)
+
 
 def h(grid, init, obj):
     cgrid = np.copy(grid)
