@@ -56,6 +56,7 @@ class Agent:
 
     def chose_action(self, grid: np.ndarray, list_agents):
         self.move(grid, np.random.choice(list(Dir)))
+        # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 
 
