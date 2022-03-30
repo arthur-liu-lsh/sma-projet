@@ -42,8 +42,15 @@ class World:
         plt.figure()
 
         cmap = colors.ListedColormap(['black', 'white', 'blue'])
-        bounds = [-2.5,-1.5,-0.5, self.n_agents]
+        bounds = [-2,-1,0, self.n_agents]
         norm = colors.BoundaryNorm(bounds, cmap.N)
+        printed_board = np.copy(self.grid)
+        while True:
+            i,j = np.random.randint(self.size), np.random.randint(self.size)
+            if self.grid[i][j] == -1:
+                self.grid[i][j] =0
+                break
+        
         #fig, ax = plt.subplots()
         plt.imshow(self.grid, cmap=cmap, norm=norm)
         for i in range(self.size):
