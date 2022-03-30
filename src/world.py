@@ -33,10 +33,17 @@ class World:
         return True
 
     def generate_agents(self, n_agents) -> list[Agent]:
+        agents = []
         k = 0
         
         while k < n_agents:
-            pass
+            i = np.random.randint(0,self.size)
+            j = np.random.randint(0,self.size)
+            if self.grid[i,j] != -1:
+                continue
+            agents.append(self.generate_one_agent(i,j))
+            k += 1
+        return agents
         
 
     def generate_one_agent(self, begin, objective) -> Agent:
