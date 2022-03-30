@@ -105,8 +105,11 @@ class World:
     def generate_one_agent(self, begin, objective, id) -> Agent:
         return Agent(begin, objective, self, id)
 
-    def show(self) -> None:
+    def init_plot(self) -> None:
         plt.figure()
+        self.show()
+
+    def show(self) -> None:
 
         cmap = colors.ListedColormap(['black', 'white', 'blue'])
         bounds = [-2,-1,0, self.n_agents]
@@ -129,7 +132,8 @@ class World:
         plt.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
         plt.xticks(np.arange(-0.5, self.size, 1))
         plt.yticks(np.arange(-0.5, self.size, 1))
-        plt.show()
+        plt.pause(0.5)
+        # plt.show()
 
 
     def check_validity_rec(self, arr, row, col, first) -> None:
