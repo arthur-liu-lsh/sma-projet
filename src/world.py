@@ -1,3 +1,4 @@
+import string
 import numpy as np
 from matplotlib import pyplot as plt
 from enum import Enum
@@ -58,16 +59,25 @@ class Agent:
         self.move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
+class AStarAgent(Agent):
+    def chose_action(self, grid: np.ndarray, list_agents):
+        self.move(grid, np.random.choice(list(Dir)))
+        # Réimplémenter la fonction dans les classes qui héritent de Agent
 
+class HValueAgent(Agent):
+    def chose_action(self, grid: np.ndarray, list_agents):
+        self.move(grid, np.random.choice(list(Dir)))
+        # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 
 
 class World:
-    def __init__(self, size: int, p_obstacles: float, n_agents: int, plot_world = True, plot_delay: float = 0.5) -> None:
+    def __init__(self, size: int, p_obstacles: float, n_agents: int, agent_type:string, plot_world = True, plot_delay: float = 0.5) -> None:
         self.size = size
         self.grid = - np.ones((size,size))
         self.p_obstacles = p_obstacles
         self.n_agents = n_agents
+        self.agent_type = agent_type
         self.generate_obstacles()
         self.agents = self.generate_agents()
         self.plot_world = plot_world
@@ -109,7 +119,12 @@ class World:
         return agents
 
     def generate_one_agent(self, begin, objective, id) -> Agent:
-        return Agent(begin, objective, self, id)
+        if self.agent_type == "A*":
+            return AStarAgent(begin, objective, self, id)
+        elif self.agent_type == "h-value":
+            return HValueAgent(begin, objective, self, id)
+        else:
+            return Agent(begin, objective, self, id)
 
     def init_plot(self) -> None:
         if self.plot_world:
