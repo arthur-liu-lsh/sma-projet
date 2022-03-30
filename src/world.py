@@ -1,7 +1,61 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from src.agent import *
+from enum import Enum
 from matplotlib import colors
+
+
+class Dir(Enum):
+    UP = 0
+    LEFT = 1
+    DOWN = 2
+    RIGHT = 3
+    STAY = 4
+
+class Agent:
+
+    def __init__(self, begin: tuple[int,int], objective: tuple[int,int], world, id: int) -> None:
+        self.id = id
+        self.position = begin
+        self.objective = objective
+        self.world = world
+        self.world.grid[begin] = id
+
+
+    def move(self, grid: np.ndarray, direction: Dir) -> bool:
+        can_move = False
+        if direction == Dir.UP:
+            new_position = (self.position[0] - 1, self.position[1])
+            can_move = self.check_move_possible(grid, new_position)
+        elif direction == Dir.LEFT:
+            new_position = (self.position[0], self.position[1] - 1)
+            can_move = self.check_move_possible(grid, new_position)
+        elif direction == Dir.DOWN:
+            new_position = (self.position[0] + 1, self.position[1])
+            can_move = self.check_move_possible(grid, new_position)
+        elif direction == Dir.RIGHT:
+            new_position = (self.position[0], self.position[1] + 1)
+            can_move = self.check_move_possible(grid, new_position)
+        else:
+            new_position = (self.position[0], self.position[1])
+            can_move = True
+        if not can_move:
+            return False
+        else:
+            self.world.grid[new_position] = self.id
+            self.world.grid[self.position] = -1
+            self.position = new_position
+            return True
+        
+    
+    def check_move_possible(self, grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
+        if coordinates[0] < 0 or coordinates[0] >= grid.shape[0] or coordinates[1] < 0 or coordinates[1] >= grid.shape[1]:
+            return False
+        if grid[coordinates] != -1:
+            return False
+        return True
+
+
+
 
 
 class World:
@@ -11,7 +65,7 @@ class World:
         self.p_obstacles = p_obstacles
         self.n_agents = n_agents
         self.generate_obstacles()
-        self.generate_agents()
+        self.agents = self.generate_agents()
 
     def generate_obstacles(self) -> None:
         n_obstacles = int(self.size**2 * self.p_obstacles)
@@ -32,11 +86,24 @@ class World:
         self.grid[i,j] = -2
         return True
 
-    def generate_agents(self) -> None:
-        pass
+    def generate_agents(self) -> list:
+        agents = []
+        for i in range(self.n_agents):
+            k = 0
+            while True:
+                print(k)
+                assert k<100, 'Fail to initialize agents'    
+                i1, j1 = np.random.randint(self.size), np.random.randint(self.size)
+                i2, j2 = np.random.randint(self.size), np.random.randint(self.size)
+                if self.grid[i1][j1] == -1 and self.grid[i2][j2]:
+                    agent = self.generate_one_agent((i1,j1), (i2,j2), i)
+                    agents.append(agent)
+                    break
+                k+=1
+        return agents
 
-    def generate_one_agent(self, begin, objective) -> Agent:
-        return Agent(begin, objective)
+    def generate_one_agent(self, begin, objective, id) -> Agent:
+        return Agent(begin, objective, self, id)
 
     def show(self) -> None:
         plt.figure()
@@ -44,11 +111,7 @@ class World:
         cmap = colors.ListedColormap(['black', 'white', 'blue'])
         bounds = [-2,-1,0, self.n_agents]
         norm = colors.BoundaryNorm(bounds, cmap.N)
-        while True:
-            i,j = np.random.randint(self.size), np.random.randint(self.size)
-            if self.grid[i][j] == -1:
-                self.grid[i][j] =0
-                break
+ 
         
         #fig, ax = plt.subplots()
         plt.imshow(self.grid, cmap=cmap, norm=norm)
