@@ -246,7 +246,7 @@ def reconstruct_path(checked, init, obj):
 
 
 
-def A_star(grid, agent):
+def a_star(grid, agent):
     queue = []
     gn = 0
     objective = agent.objective
