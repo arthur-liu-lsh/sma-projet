@@ -55,19 +55,82 @@ class Agent:
             return False
         return True
 
-    def chose_action(self, grid: np.ndarray, list_agents):
+    def chose_action(self, grid: np.ndarray):
         self.chose_move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 class AStarAgent(Agent):
-    def chose_action(self, grid: np.ndarray, list_agents):
-        self.chose_move(grid, np.random.choice(list(Dir)))
-        # Réimplémenter la fonction dans les classes qui héritent de Agent
+    def chose_action(self, grid: np.ndarray):
+        new_position = self.find_next_position(grid)
+        self.world.grid[self.position] = -1
+        self.world.grid[new_position] = self.id
+        self.position = new_position
 
-class HValueAgent(Agent):
-    def chose_action(self, grid: np.ndarray, list_agents):
-        self.chose_move(grid, np.random.choice(list(Dir)))
-        # Réimplémenter la fonction dans les classes qui héritent de Agent
+    def find_next_position(self, grid):
+        queue = []
+        gn = 0
+        objective = self.objective
+        fn = h(grid, self.position, objective)
+        if fn == -1 :
+            return self.position #si pas de possibilité d'accéder à l'objectif, on attend à la même case   
+        queue.append([gn, fn, self.position])
+        checked = []
+        while queue:
+            test1 = [x[1] for x in queue]
+            ind = test1.index(min(test1))
+            node = queue.pop(ind)
+            coord = node[1]
+            print(coord)
+            print(node)
+            if coord == node[2]:
+                return reconstruct_path(checked)
+            else:
+                gn = node[0]+1
+                test2 = [x[1] for x in checked]
+                
+                if coord[0] -1 >= 0 and grid[coord[0]-1][coord[1]]==-1:
+                    new_coord = (coord[0]-1, coord[1])
+                    test3 = [x[0] for x in queue if x[2]==new_coord]
+                    if not new_coord in test2 and all(i >= gn for i in test3):
+                        res = h(grid, new_coord, objective)
+                        if res > -1:
+                            fn = gn + res
+                            checked.append([coord, new_coord, fn])
+                            queue.append([gn, fn, new_coord])
+
+
+                if coord[0] + 1 <grid.shape[0] and grid[coord[0]+1][coord[1]]==-1:
+                    new_coord = (coord[0]+1, coord[1])
+                    test3 = [x[0] for x in queue if x[2]==new_coord]
+                    if not new_coord in test2 and all(i >= gn for i in test3):
+                        res = h(grid, new_coord, objective)
+                        if res > -1:
+                            fn = gn + res
+                            checked.append([coord, new_coord, fn])
+                            queue.append([gn, fn, new_coord])
+
+
+                if coord[1] -1 >= 0 and grid[coord[0]][coord[1]-1]==-1:
+                    new_coord = (coord[0], coord[1]-1)
+                    test3 = [x[0] for x in queue if x[2]==new_coord]
+                    if not new_coord in test2 and all(i >= gn for i in test3):
+                        res = h(grid, new_coord, objective)
+                        if res > -1:
+                            fn = gn + res
+                            checked.append([coord, new_coord, fn])
+                            queue.append([gn, fn, new_coord])
+
+
+                if coord[1] + 1 <grid.shape[1] and grid[coord[0]][coord[1]+1]==-1:
+                    new_coord = (coord[0], coord[1]+1)
+                    test3 = [x[0] for x in queue if x[2]==new_coord]
+                    if not new_coord in test2 and all(i >= gn for i in test3):
+                        res = h(grid, new_coord, objective)
+                        if res > -1:
+                            fn = gn + res
+                            checked.append([coord, new_coord, fn])
+                            queue.append([gn, fn, new_coord])
+        return self.position
 
 
 
@@ -121,8 +184,6 @@ class World:
     def generate_one_agent(self, begin, objective, id) -> Agent:
         if self.agent_type == "A*":
             return AStarAgent(begin, objective, self, id)
-        elif self.agent_type == "h-value":
-            return HValueAgent(begin, objective, self, id)
         else:
             return Agent(begin, objective, self, id)
 
@@ -194,7 +255,7 @@ class World:
 
     def one_iter(self) -> None:
         for a in self.agents:
-            a.chose_action(self.grid, self.agents)
+            a.chose_action(self.grid)
 
     def simulate(self) -> int:
         go = not self.objective_attained()
