@@ -197,13 +197,12 @@ class World:
             a.chose_action(self.grid, self.agents)
 
     def simulate(self) -> int:
-        go = True
+        go = not self.objective_attained()
         count = 0
         while go:
             self.one_iter()
             if self.plot_world:
                 self.show()
-            if self.objective_attained():
-                go = False
+            go = not self.objective_attained()
             count += 1
         return count
