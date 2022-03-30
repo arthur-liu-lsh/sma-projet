@@ -20,7 +20,6 @@ class Agent:
         self.objective = objective
         self.world = world
         self.world.grid[begin] = id
-        self.move_intention = (-1,-1)
 
 
     def chose_move(self, grid: np.ndarray, direction: Dir) -> bool:
@@ -45,21 +44,15 @@ class Agent:
         else:
             self.world.grid[self.position] = -1
             self.world.grid[new_position] = self.id
-            self.move_intention = new_position
-            self.world.agents_next_positions.append(new_position)
+            self.position = new_position
             return True
-        
-    def apply_move(self) -> None:
-        self.position = self.move_intention
+
 
     def check_move_possible(self, grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
         if coordinates[0] < 0 or coordinates[0] >= grid.shape[0] or coordinates[1] < 0 or coordinates[1] >= grid.shape[1]:
             return False
         if grid[coordinates] != -1:
             return False
-        for pos in self.world.agents_next_positions:
-            if coordinates == pos:
-                return False
         return True
 
     def chose_action(self, grid: np.ndarray, list_agents):
@@ -89,7 +82,6 @@ class World:
         self.agents = self.generate_agents()
         self.plot_world = plot_world
         self.plot_delay = plot_delay
-        self.agents_next_positions = []
 
     def generate_obstacles(self) -> None:
         n_obstacles = int(self.size**2 * self.p_obstacles)
@@ -203,8 +195,6 @@ class World:
     def one_iter(self) -> None:
         for a in self.agents:
             a.chose_action(self.grid, self.agents)
-        for a in self.agents:
-            a.chose_action(self.grid,self.agents)
 
     def simulate(self) -> int:
         go = not self.objective_attained()
