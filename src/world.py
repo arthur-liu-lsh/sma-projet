@@ -8,7 +8,7 @@ class World:
         self.grid = - np.ones((size,size))
         self.p_obstacles = p_obstacles
         self.generate_obstacles()
-        self.generate_agents()
+        self.agents = self.generate_agents(n_agents)
 
     def generate_obstacles(self) -> None:
         n_obstacles = int(self.size**2 * self.p_obstacles)
@@ -29,8 +29,12 @@ class World:
         self.grid[i,j] = -2
         return True
 
-    def generate_agents(self) -> None:
-        pass
+    def generate_agents(self, n_agents) -> list[Agent]:
+        k = 0
+        
+        while k < n_agents:
+            pass
+        
 
     def generate_one_agent(self, begin, objective) -> Agent:
         return Agent(begin, objective)
