@@ -4,13 +4,13 @@ from src.world import *
 
 def main():
 
-    a = World(10, 0.2,3, "A*", True, 0.5)
+    a = World(10, 0.01,3, "EpsGreedy", True, 0.1)
     # a.show()
     a.init_plot()
     print(a.check_validity(5, 0.7))
     nb_iter = a.simulate()
     
-    print(np.sum(a.grid == -1))
+    print(nb_iter)
 
 if __name__=="__main__":
    main()

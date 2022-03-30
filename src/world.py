@@ -59,6 +59,36 @@ class Agent:
         self.chose_move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
+class EpsGreedy(Agent):
+    def chose_action(self, grid: np.ndarray):
+        eps = 0.25
+        p = np.random.rand()
+        if self.objective != self.position:
+            if p < eps:
+                self.chose_move(grid, np.random.choice(list(Dir)))
+            else:
+                if self.position[0] > self.objective[0]:
+                    if grid[self.position[0]-1, self.position[1]] == -1:
+                        self.chose_move(grid, Dir.UP)
+                        return None
+                if self.position[0] < self.objective[0]:
+                    if grid[self.position[0]+1, self.position[1]] == -1:
+                        self.chose_move(grid, Dir.DOWN)
+                        return None
+                if self.position[1] > self.objective[1]:
+                    if grid[self.position[0], self.position[1]-1] == -1:
+                        self.chose_move(grid, Dir.LEFT)
+                        return None
+                if self.position[1] < self.objective[1]:
+                    if grid[self.position[0], self.position[1]+1] == -1:
+                        self.chose_move(grid, Dir.RIGHT)
+                        return None
+                self.chose_move(grid, np.random.choice(list(Dir)))
+                return None
+        else:
+            self.chose_move(grid, Dir.STAY)
+        return None
+
 class AStarAgent(Agent):
     def chose_action(self, grid: np.ndarray):
         new_position = self.find_next_position(grid)
@@ -79,11 +109,9 @@ class AStarAgent(Agent):
             test1 = [x[1] for x in queue]
             ind = test1.index(min(test1))
             node = queue.pop(ind)
-            coord = node[1]
-            print(coord)
-            print(node)
-            if coord == node[2]:
-                return reconstruct_path(checked)
+            coord = node[2]
+            if coord == self.objective:
+                return reconstruct_path(checked, self.position, self.objective)
             else:
                 gn = node[0]+1
                 test2 = [x[1] for x in checked]
@@ -174,7 +202,8 @@ class World:
                 assert k<100, 'Fail to initialize agents'    
                 i1, j1 = np.random.randint(self.size), np.random.randint(self.size)
                 i2, j2 = np.random.randint(self.size), np.random.randint(self.size)
-                if self.grid[i1][j1] == -1 and self.grid[i2][j2]:
+                if self.grid[i1][j1] == -1 and self.grid[i2][j2] == -1:
+                    print("Agent", i, "objective", (i2,j2))
                     agent = self.generate_one_agent((i1,j1), (i2,j2), i)
                     agents.append(agent)
                     break
@@ -184,6 +213,8 @@ class World:
     def generate_one_agent(self, begin, objective, id) -> Agent:
         if self.agent_type == "A*":
             return AStarAgent(begin, objective, self, id)
+        elif self.agent_type == "EpsGreedy":
+            return EpsGreedy(begin, objective, self, id)
         else:
             return Agent(begin, objective, self, id)
 
@@ -216,7 +247,8 @@ class World:
         plt.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
         plt.xticks(np.arange(-0.5, self.size, 1))
         plt.yticks(np.arange(-0.5, self.size, 1))
-        plt.pause(self.plot_delay)
+        if self.plot_delay > 0:
+            plt.pause(self.plot_delay)
         # plt.show()
 
 
