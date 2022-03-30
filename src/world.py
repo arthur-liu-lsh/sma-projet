@@ -65,7 +65,7 @@ class World:
         self.p_obstacles = p_obstacles
         self.n_agents = n_agents
         self.generate_obstacles()
-        self.agents = self.generate_agents()
+        self.agents = self.generate_agents(n_agents)
 
     def generate_obstacles(self) -> None:
         n_obstacles = int(self.size**2 * self.p_obstacles)

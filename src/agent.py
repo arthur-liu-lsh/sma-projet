@@ -44,11 +44,9 @@ class Agent:
             self.position = new_position
             return True
         
-    
     def check_move_possible(self, grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
         if coordinates[0] < 0 or coordinates[0] >= grid.shape[0] or coordinates[1] < 0 or coordinates[1] >= grid.shape[1]:
             return False
         if grid[coordinates] == -1:
             return False
         return True
-
