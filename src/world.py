@@ -285,7 +285,8 @@ class World:
 
     def one_iter(self) -> None:
         for a in self.agents:
-            a.chose_action(self.grid)
+            if a.position != a.objective:
+                a.chose_action(self.grid)
 
     def simulate(self) -> int:
         go = not self.objective_attained()
@@ -401,4 +402,3 @@ def a_star(grid, agent):
                         checked.append([coord, new_coord, fn])
                         queue.append([gn, fn, new_coord])
     return None
-

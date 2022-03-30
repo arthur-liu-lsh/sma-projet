@@ -8,14 +8,14 @@ def main():
     
     n_iter = 1000
 
-    sum = 0
-    for i in range(n_iter):
-        world_EpsGreedy = World(10, 0.2,3, "EpsGreedy", False, 0.1)
-        while not world_EpsGreedy.check_validity(5, 0.7):
-            world_EpsGreedy = World(10, 0.2,3, "EpsGreedy", False, 0.1)
-        sum += world_EpsGreedy.simulate()
+    #sum = 0
+    #for i in range(n_iter):
+    #    world_EpsGreedy = World(10, 0.2,3, "EpsGreedy", False, 0.1)
+    #    while not world_EpsGreedy.check_validity(5, 0.7):
+   #         world_EpsGreedy = World(10, 0.2,3, "EpsGreedy", False, 0.1)
+   #     sum += world_EpsGreedy.simulate()
     
-    print("EpsGreedy",sum/n_iter)
+   # print("EpsGreedy",sum/n_iter)
 
     sum = 0
     for i in range(n_iter):
