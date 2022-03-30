@@ -41,8 +41,8 @@ class Agent:
         if not can_move:
             return False
         else:
-            self.world.grid[new_position] = self.id
             self.world.grid[self.position] = -1
+            self.world.grid[new_position] = self.id
             self.position = new_position
             return True
         
@@ -54,18 +54,23 @@ class Agent:
             return False
         return True
 
+    def chose_action(self, grid: np.ndarray, list_agents):
+        self.move(grid, np.random.choice(list(Dir)))
+
 
 
 
 
 class World:
-    def __init__(self, size: int, p_obstacles: float, n_agents: int) -> None:
+    def __init__(self, size: int, p_obstacles: float, n_agents: int, plot_world = True, plot_delay: float = 0.5) -> None:
         self.size = size
         self.grid = - np.ones((size,size))
         self.p_obstacles = p_obstacles
         self.n_agents = n_agents
         self.generate_obstacles()
         self.agents = self.generate_agents()
+        self.plot_world = plot_world
+        self.plot_delay = plot_delay
 
     def generate_obstacles(self) -> None:
         n_obstacles = int(self.size**2 * self.p_obstacles)
@@ -106,8 +111,9 @@ class World:
         return Agent(begin, objective, self, id)
 
     def init_plot(self) -> None:
-        plt.figure()
-        self.show()
+        if self.plot_world:
+            plt.figure()
+            self.show()
 
     def show(self) -> None:
 
@@ -133,7 +139,7 @@ class World:
         plt.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
         plt.xticks(np.arange(-0.5, self.size, 1))
         plt.yticks(np.arange(-0.5, self.size, 1))
-        plt.pause(0.5)
+        plt.pause(self.plot_delay)
         # plt.show()
 
 
@@ -163,3 +169,25 @@ class World:
             if res == True:
                 break
         return res
+
+    def objective_attained(self) -> bool:
+        for a in self.agents:
+            if a.position != a.objective:
+                return False
+        return True
+
+    def one_iter(self) -> None:
+        for a in self.agents:
+            a.chose_action(self.grid, self.agents)
+
+    def simulate(self) -> int:
+        go = True
+        count = 0
+        while go:
+            self.one_iter()
+            if self.plot_world:
+                self.show()
+            if self.objective_attained():
+                go = False
+            count += 1
+        return count
