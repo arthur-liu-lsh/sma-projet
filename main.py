@@ -6,7 +6,7 @@ def main():
 
     # a.show()
     
-    n_iter = 1000
+    n_iter = 100
 
     sum = 0
     for i in range(n_iter):
@@ -15,7 +15,7 @@ def main():
             world_EpsGreedy = World(10, 0.2,3, "EpsGreedy", False, 0.1)
         sum += world_EpsGreedy.simulate()
     
-    print("EpsGreedy",sum/n_iter)
+    print("EpsGreedy 10x10, 20", "%", "d'obstacles", n_iter, "itérations :",sum/n_iter)
 
     sum = 0
     for i in range(n_iter):
