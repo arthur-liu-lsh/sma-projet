@@ -22,7 +22,7 @@ class Agent:
         self.world.grid[begin] = id
 
 
-    def move(self, grid: np.ndarray, direction: Dir) -> bool:
+    def chose_move(self, grid: np.ndarray, direction: Dir) -> bool:
         can_move = False
         if direction == Dir.UP:
             new_position = (self.position[0] - 1, self.position[1])
@@ -46,8 +46,8 @@ class Agent:
             self.world.grid[new_position] = self.id
             self.position = new_position
             return True
-        
-    
+
+
     def check_move_possible(self, grid: np.ndarray, coordinates: tuple[int,int]) -> bool:
         if coordinates[0] < 0 or coordinates[0] >= grid.shape[0] or coordinates[1] < 0 or coordinates[1] >= grid.shape[1]:
             return False
@@ -56,17 +56,17 @@ class Agent:
         return True
 
     def chose_action(self, grid: np.ndarray, list_agents):
-        self.move(grid, np.random.choice(list(Dir)))
+        self.chose_move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 class AStarAgent(Agent):
     def chose_action(self, grid: np.ndarray, list_agents):
-        self.move(grid, np.random.choice(list(Dir)))
+        self.chose_move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 class HValueAgent(Agent):
     def chose_action(self, grid: np.ndarray, list_agents):
-        self.move(grid, np.random.choice(list(Dir)))
+        self.chose_move(grid, np.random.choice(list(Dir)))
         # Réimplémenter la fonction dans les classes qui héritent de Agent
 
 
@@ -197,14 +197,13 @@ class World:
             a.chose_action(self.grid, self.agents)
 
     def simulate(self) -> int:
-        go = True
+        go = not self.objective_attained()
         count = 0
         while go:
             self.one_iter()
             if self.plot_world:
                 self.show()
-            if self.objective_attained():
-                go = False
+            go = not self.objective_attained()
             count += 1
         return count
 
