@@ -1,12 +1,15 @@
 import numpy as np
 from matplotlib import pyplot as plt
 from src.agent import *
+from matplotlib import colors
+
 
 class World:
     def __init__(self, size: int, p_obstacles: float, n_agents: int) -> None:
         self.size = size
         self.grid = - np.ones((size,size))
         self.p_obstacles = p_obstacles
+        self.n_agents = n_agents
         self.generate_obstacles()
         self.agents = self.generate_agents(n_agents)
 
@@ -41,7 +44,33 @@ class World:
 
     def show(self) -> None:
         plt.figure()
-        plt.imshow(self.grid, cmap='gray')
+
+        cmap = colors.ListedColormap(['black', 'white', 'blue'])
+        bounds = [-2,-1,0, self.n_agents]
+        norm = colors.BoundaryNorm(bounds, cmap.N)
+        printed_board = np.copy(self.grid)
+        while True:
+            i,j = np.random.randint(self.size), np.random.randint(self.size)
+            if self.grid[i][j] == -1:
+                self.grid[i][j] =0
+                break
+        
+        #fig, ax = plt.subplots()
+        plt.imshow(self.grid, cmap=cmap, norm=norm)
+        for i in range(self.size):
+            for j in range(self.size):
+                x = self.grid[i][j]
+                if x>= 0:
+                    c = str(x)
+                else:
+                    c = ''
+                plt.text(j, i, c, va='center', ha='center')
+
+
+        # draw gridlines
+        plt.grid(which='major', axis='both', linestyle='-', color='k', linewidth=2)
+        plt.xticks(np.arange(-0.5, self.size, 1))
+        plt.yticks(np.arange(-0.5, self.size, 1))
         plt.show()
 
 
