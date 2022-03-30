@@ -1,5 +1,7 @@
 import numpy as np
 from enum import Enum
+from src.world import *
+
 
 class Dir(Enum):
     UP = 0
@@ -10,9 +12,12 @@ class Dir(Enum):
 
 class Agent:
 
-    def __init__(self, begin: tuple[int,int], objective: tuple[int,int]) -> None:
+    def __init__(self, begin: tuple[int,int], objective: tuple[int,int], world: World, id: int) -> None:
+        self.id = id
         self.position = begin
         self.objective = objective
+        self.world = world
+
 
     def move(self, grid: np.ndarray, direction: Dir) -> bool:
         can_move = False
@@ -34,6 +39,8 @@ class Agent:
         if not can_move:
             return False
         else:
+            self.world.grid[new_position] = self.id
+            self.world.grid[self.position] = -1
             self.position = new_position
             return True
         

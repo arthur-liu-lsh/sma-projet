@@ -44,7 +44,6 @@ class World:
         cmap = colors.ListedColormap(['black', 'white', 'blue'])
         bounds = [-2,-1,0, self.n_agents]
         norm = colors.BoundaryNorm(bounds, cmap.N)
-        printed_board = np.copy(self.grid)
         while True:
             i,j = np.random.randint(self.size), np.random.randint(self.size)
             if self.grid[i][j] == -1:
