@@ -198,12 +198,10 @@ class World:
         for i in range(self.n_agents):
             k = 0
             while True:
-                print(k)
                 assert k<100, 'Fail to initialize agents'    
                 i1, j1 = np.random.randint(self.size), np.random.randint(self.size)
                 i2, j2 = np.random.randint(self.size), np.random.randint(self.size)
                 if self.grid[i1][j1] == -1 and self.grid[i2][j2] == -1:
-                    print("Agent", i, "objective", (i2,j2))
                     agent = self.generate_one_agent((i1,j1), (i2,j2), i)
                     agents.append(agent)
                     break
@@ -292,7 +290,7 @@ class World:
     def simulate(self) -> int:
         go = not self.objective_attained()
         count = 0
-        while go:
+        while go and count < 1000:
             self.one_iter()
             if self.plot_world:
                 self.show()
@@ -336,6 +334,7 @@ def reconstruct_path(checked, init, obj):
         res = checked[ind][0]
         if res == init:
             return current
+        current = res
 
 
 
