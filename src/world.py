@@ -117,12 +117,13 @@ class World:
  
         
         #fig, ax = plt.subplots()
+        plt.clf()
         plt.imshow(self.grid, cmap=cmap, norm=norm)
         for i in range(self.size):
             for j in range(self.size):
                 x = self.grid[i][j]
                 if x>= 0:
-                    c = str(x)
+                    c = str(int(x))
                 else:
                     c = ''
                 plt.text(j, i, c, va='center', ha='center')
